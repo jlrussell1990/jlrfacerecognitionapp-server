@@ -23,22 +23,14 @@ const db = knex({
 const app = express();
 
 // Enable CORS
-app.use(cors({
-  origin: 'http://localhost:3001',
-  credentials: true
-}));
+app.use(cors())
+//   origin: 'http://localhost:3001',
+//   credentials: true
+// }));
 
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => {
-  db.select('*')
-    .from('users')
-    .then(users => {
-      res.json(users);
-    })
-    .catch(err => res.status(400).json('error getting users'));
-});
-
+app.get('/', (req, res) => {res.send('it is working') })
 app.post('/signin', (req, res) => { signin.handleSignin(req, res, db, bcrypt) });
 app.post('/register', (req, res) => { register.handleRegister(req, res, db, bcrypt) });
 app.get('/profile/:id', (req, res) => { profile.handleProfileGet(req, res, db) });
