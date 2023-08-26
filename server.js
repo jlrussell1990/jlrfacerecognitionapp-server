@@ -28,7 +28,8 @@ app.use(cors())
 //   credentials: true
 // }));
 
-app.use(bodyParser.json());
+app.use(express.json());
+// app.use(bodyParser.json());
 
 app.get('/', (req, res) => {res.send('it is working') })
 app.post('/signin', (req, res) => { signin.handleSignin(req, res, db, bcrypt) });
