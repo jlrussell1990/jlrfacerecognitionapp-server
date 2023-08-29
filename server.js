@@ -20,9 +20,10 @@ const db = knex({
 const app = express();
 
 app.use(cors({
-  origin: 'https://localhost:3000', // Replace with your actual front-end URL
+  origin: 'http://localhost:3000',
   credentials: true
 }));
+
 
 
 app.use(express.json());
