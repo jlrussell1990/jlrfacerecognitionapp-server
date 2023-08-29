@@ -19,11 +19,11 @@ const db = knex({
 
 const app = express();
 
-// Enable CORS
-app.use(cors())
-//   origin: 'http://localhost:3001',
-//   credentials: true
-// }));
+app.use(cors({
+  origin: 'https://localhost:3000', // Replace with your actual front-end URL
+  credentials: true
+}));
+
 
 app.use(express.json());
 // app.use(bodyParser.json());
