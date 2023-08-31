@@ -47,7 +47,9 @@ app.post('/register', (req, res) => {
   const { email, name, password } = req.body;
   console.log('Received data:', email, name);
   const hash = bcrypt.hashSync(password);
+  console.log('password hash:', hash);
     db.transaction(trx => {
+      console.log('inside transaction')
       trx.insert({
         hash: hash,
         email: email
@@ -55,6 +57,7 @@ app.post('/register', (req, res) => {
       .into('login')
       .returning('email')
       .then(loginEmail => {
+        console.log('login inserted:', loginEmail);
         return trx('users')
           .returning('*')
           .insert({
@@ -67,6 +70,7 @@ app.post('/register', (req, res) => {
             joined: new Date()
           })
           .then(user => {
+            console.log('user inserted:', user);
             res.json(user[0]);
           })
       })
