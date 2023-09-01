@@ -28,7 +28,6 @@ app.get('/', (req, res) => {res.send('it is working') })
 
 app.post('/signin', (req, res) => {
   db.select('email', 'hash').from('login')
-  console.log('Received data:', email, hash);
     .where('email', '=', req.body.email)
     .then(data => {
       const isValid = bcrypt.compareSync(req.body.password, data[0].hash);
