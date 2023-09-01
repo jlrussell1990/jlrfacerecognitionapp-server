@@ -27,23 +27,38 @@ app.use(express.json()); // latest version of exressJS now comes with Body-Parse
 app.get('/', (req, res) => {res.send('it is working') })
 
 app.post('/signin', (req, res) => {
+  console.log('Signin request received:', req.body.email); // Added this line
+
   db.select('email', 'hash').from('login')
     .where('email', '=', req.body.email)
     .then(data => {
+      console.log('Data retrieved from login table:', data); // Added this line
+
       const isValid = bcrypt.compareSync(req.body.password, data[0].hash);
+      console.log('Password validation result:', isValid); // Added this line
+
       if (isValid) {
         return db.select('*').from('users')
           .where('email', '=', req.body.email)
           .then(user => {
-            res.json(user[0])
+            console.log('User data retrieved from users table:', user); // Added this line
+            res.json(user[0]);
           })
-          .catch(err => res.status(400).json('unable to get user'))
+          .catch(err => {
+            console.log('Error retrieving user data:', err); // Added this line
+            res.status(400).json('unable to get user');
+          });
       } else {
-        res.status(400).json('wrong credentials')
+        console.log('Invalid password'); // Added this line
+        res.status(400).json('wrong credentials');
       }
     })
-    .catch(err => res.status(400).json('wrong credentials'))
-})
+    .catch(err => {
+      console.log('Error retrieving email and hash:', err); // Added this line
+      res.status(400).json('wrong credentials');
+    });
+});
+
 
 app.post('/register', (req, res) => {
   const { email, name, password } = req.body;
