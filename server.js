@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
   res.send('it is working');
 });
 
-app.post('/signin', (req, res) => {
+app.get('/signin', (req, res) => {
   console.log('Received POST request at /signin'); // Added this line
   db.select('email', 'hash')
     .from('login')
