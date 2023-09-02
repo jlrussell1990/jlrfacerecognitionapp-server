@@ -33,26 +33,35 @@ app.get('/', (req, res) => {
 
 app.post('/signin', (req, res) => {
   const { email, password } = req.body;
+  
+  console.log('Received POST request at /signin'); // Log when the request is received
+  
   db.select('email', 'hash')
     .from('login')
     .where('email', '=', email)
     .then(data => {
+      console.log('Data retrieved from login table:', data); // Log data retrieved
+      
       if (data.length > 0) {
         const isValid = bcrypt.compareSync(password, data[0].hash);
         if (isValid) {
           // Sign-in successful
           // Return user data or authentication token
+          console.log('Sign-in successful'); // Log successful sign-in
+          // You can return user data or an authentication token here
         } else {
           // Passwords do not match
+          console.log('Invalid credentials'); // Log invalid credentials
           res.status(400).json('Invalid credentials');
         }
       } else {
         // User not found
+        console.log('User not found'); // Log user not found
         res.status(400).json('User not found');
       }
     })
     .catch(err => {
-      console.error('Error signing in:', err);
+      console.error('Error signing in:', err); // Log error
       res.status(500).json('Internal server error');
     });
 });
