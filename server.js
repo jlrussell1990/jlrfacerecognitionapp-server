@@ -32,34 +32,31 @@ app.get('/', (req, res) => {
 });
 
 app.post('/signin', (req, res) => {
-  console.log('Received POST request at /signin'); // Added this line
+  const { email, password } = req.body;
   db.select('email', 'hash')
     .from('login')
-    .where('email', '=', req.body.email)
+    .where('email', '=', email)
     .then(data => {
-      console.log('Data retrieved from login table:', data); // Added this line
-      const isValid = bcrypt.compareSync(req.body.password, data[0].hash);
-      if (isValid) {
-        return db.select('*')
-          .from('users')
-          .where('email', '=', req.body.email)
-          .then(user => {
-            console.log('User found:', user[0]); // Added this line
-            res.json(user[0]);
-          })
-          .catch(err => {
-            console.error('Error retrieving user:', err); // Added this line
-            res.status(400).json('unable to get user');
-          });
+      if (data.length > 0) {
+        const isValid = bcrypt.compareSync(password, data[0].hash);
+        if (isValid) {
+          // Sign-in successful
+          // Return user data or authentication token
+        } else {
+          // Passwords do not match
+          res.status(400).json('Invalid credentials');
+        }
       } else {
-        res.status(400).json('wrong credentials');
+        // User not found
+        res.status(400).json('User not found');
       }
     })
     .catch(err => {
-      console.error('Error retrieving data from login table:', err); // Added this line
-      res.status(400).json('wrong credentials');
+      console.error('Error signing in:', err);
+      res.status(500).json('Internal server error');
     });
 });
+
 
 app.post('/register', (req, res) => {
   const { email, name, password } = req.body;
