@@ -24,41 +24,40 @@ app.use(express.json()); // latest version of exressJS now comes with Body-Parse
 //   res.send(database.users);
 // })
 
-app.get('/', (req, res) => {res.send('it is working') })
+app.get('/', (req, res) => {
+  console.log('Received request at root path'); // Added this line
+  res.send('it is working');
+});
 
 app.post('/signin', (req, res) => {
-  console.log('Signin request received:', req.body.email); // Added this line
-
-  db.select('email', 'hash').from('login')
+  console.log('Received POST request at /signin'); // Added this line
+  db.select('email', 'hash')
+    .from('login')
     .where('email', '=', req.body.email)
     .then(data => {
       console.log('Data retrieved from login table:', data); // Added this line
-
       const isValid = bcrypt.compareSync(req.body.password, data[0].hash);
-      console.log('Password validation result:', isValid); // Added this line
-
       if (isValid) {
-        return db.select('*').from('users')
+        return db.select('*')
+          .from('users')
           .where('email', '=', req.body.email)
           .then(user => {
-            console.log('User data retrieved from users table:', user); // Added this line
+            console.log('User found:', user[0]); // Added this line
             res.json(user[0]);
           })
           .catch(err => {
-            console.log('Error retrieving user data:', err); // Added this line
+            console.error('Error retrieving user:', err); // Added this line
             res.status(400).json('unable to get user');
           });
       } else {
-        console.log('Invalid password'); // Added this line
         res.status(400).json('wrong credentials');
       }
     })
     .catch(err => {
-      console.log('Error retrieving email and hash:', err); // Added this line
+      console.error('Error retrieving data from login table:', err); // Added this line
       res.status(400).json('wrong credentials');
     });
 });
-
 
 app.post('/register', (req, res) => {
   const { email, name, password } = req.body;
@@ -99,16 +98,23 @@ app.post('/register', (req, res) => {
 
 app.get('/profile/:id', (req, res) => {
   const { id } = req.params;
-  db.select('*').from('users').where({id})
+  console.log(`Received request at /profile/${id}`); // Added this line
+  db.select('*')
+    .from('users')
+    .where({ id })
     .then(user => {
       if (user.length) {
-        res.json(user[0])
+        console.log('User profile retrieved:', user[0]); // Added this line
+        res.json(user[0]);
       } else {
-        res.status(400).json('Not found')
+        res.status(400).json('Not found');
       }
     })
-    .catch(err => res.status(400).json('error getting user'))
-})
+    .catch(err => {
+      console.error('Error getting user profile:', err); // Added this line
+      res.status(400).json('error getting user');
+    });
+});
 
 app.put('/image', (req, res) => {
   const { id } = req.body;
